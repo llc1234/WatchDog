@@ -218,6 +218,11 @@ class WatchDog:
             except:
                 pass
 
+        # print(f"python {self.generate["payload"]}.py {self.generate["lhost"]} {self.generate["lport"]}")
+        print("")
+        os.system(f"python {self.generate["payload"]}.py {self.generate["lhost"]} {self.generate["lport"]}")
+        print("")
+
     def set_server(self, li):
         for pp in li:
             try:
