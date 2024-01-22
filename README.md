@@ -9,7 +9,7 @@ Basic Shell Interface:     Interact with connected clients using a shell-like in
 
 # Installation
 ```python
-git clone https://github.com/your-username/WatchDog.git
+git clone https://github.com/llc1234/WatchDog.git
 cd WatchDog
 python WatchDog.py
 ```
