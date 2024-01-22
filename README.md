@@ -21,12 +21,14 @@ generate
 Generate a payload for a reverse shell connection.
 ```python
 generate payload=<payload_type> lhost=<local_host> lport=<local_port>
+generate payload=<payload_type> lport=<local_port>
 ```
 
 server
 Configure the server settings and start listening for incoming connections.
 ```python
 server rhost=<remote_host> rport=<remote_port> listening=<true/false>
+server rport=<remote_port> listening=<true/false>
 ```
 
 # sessions
