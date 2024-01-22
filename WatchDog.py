@@ -93,7 +93,7 @@ class WatchDog:
                     Check_Privileges = self.cmd_Check_Privileges(conn)
                     name_os = self.cmd_OS_name(conn)
 
-                    print(f"{colorama.Fore.GREEN}[+] {colorama.Fore.LIGHTMAGENTA_EX}Client connected IP: {addr[0]}, User: {User_name}, Admin: {Check_Privileges} OS: {name_os}{colorama.Fore.LIGHTBLUE_EX}")
+                    print(f"{colorama.Fore.GREEN}[+] {colorama.Fore.LIGHTMAGENTA_EX}Client connected IP: {addr[0]}, User: {User_name}, Admin: {Check_Privileges}, OS: {name_os}{colorama.Fore.LIGHTBLUE_EX}")
                     print(self.WatchDog_Input_Text, end='', flush=True)
 
                     self.data_clients.append([conn, addr[0], User_name, Check_Privileges, name_os, False])
