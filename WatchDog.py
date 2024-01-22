@@ -119,8 +119,8 @@ class WatchDog:
             print("")
             print("Server is running...")
             print("")
-            print(f"IP  : {self.server["rhost"]}")
-            print(f"PORT: {self.server["rport"]}")
+            print(f"IP  : {self.server['rhost']}")
+            print(f"PORT: {self.server['rport']}")
             print("")
 
         except Exception as e:
