@@ -6,8 +6,6 @@ import threading
 
 colorama.init()
 
-# colorama.Fore.GREEN
-
 class WatchDog:
     def __init__(self):
         self.running = True
@@ -245,13 +243,3 @@ class WatchDog:
 
 
 WatchDog()
-
-# print("This is a line of text", end='', flush=True)
-
-# time.sleep(2)
-
-# print('\r' + ' ' * 30 + '\r', end='', flush=True)
-
-# time.sleep(1)
-
-# print("This is a line of text 2", end='', flush=True)
