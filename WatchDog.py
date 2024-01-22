@@ -30,8 +30,7 @@ class WatchDog:
         self.s_f = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.s_f.connect(("8.8.8.8", 80))
 
-        self.server["rhost"] = self.s_f.getsockname()[0]
-        self.generate["lhost"] = self.s_f.getsockname()[0]
+        
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.settimeout(2)
@@ -39,7 +38,12 @@ class WatchDog:
         threading.Thread(target=self.listening).start()
         threading.Thread(target=self.test_connections).start()
 
+        self.set_ip()
         self.startup()
+
+    def set_ip(self):
+        self.server["rhost"] = self.s_f.getsockname()[0]
+        self.generate["lhost"] = self.s_f.getsockname()[0]
 
     def startup(self):
         print(colorama.Fore.RED)
