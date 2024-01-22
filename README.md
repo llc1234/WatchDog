@@ -19,12 +19,15 @@ WatchDog uses a simple command-line interface to manage various functionalities.
 
 generate
 Generate a payload for a reverse shell connection.
+```C
 generate payload=<payload_type> lhost=<local_host> lport=<local_port>
-
+```
 
 server
 Configure the server settings and start listening for incoming connections.
+```C
 server rhost=<remote_host> rport=<remote_port> listening=<true/false>
+```
 
 # sessions
 List all currently connected clients.
