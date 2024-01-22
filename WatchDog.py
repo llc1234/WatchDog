@@ -6,6 +6,7 @@ import threading
 
 colorama.init()
 
+
 class WatchDog:
     def __init__(self):
         self.running = True
@@ -243,7 +244,7 @@ class WatchDog:
 
         # print(f"python {self.generate["payload"]}.py {self.generate["lhost"]} {self.generate["lport"]}")
         print("")
-        os.system(f"python {self.generate["payload"]}.py {self.generate["lhost"]} {self.generate["lport"]}")
+        os.system(f"python {self.generate['payload']}.py {self.generate['lhost']} {self.generate['lport']}")
         print("")
 
     def set_server(self, li):
