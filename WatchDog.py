@@ -169,11 +169,6 @@ class WatchDog:
         self.WatchDog_Input_Text = f"{colorama.Fore.RED}@WatchDog>{colorama.Fore.LIGHTBLUE_EX}"
 
     def transfer(self, commands):
-        # transfer 0 C:\Users\lasse\Desktop\WatchDog\test_message.txt new_name.text
-
-        # New-Item -ItemType File -Name "YourFile.txt"
-        # Set-Content -Path "YourFile.txt" -Value "Hello, this is the content of the file."
-
         client_n = int(commands[1])
 
         try:
