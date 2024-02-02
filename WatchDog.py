@@ -215,6 +215,7 @@ class WatchDog:
                 print("     payload=")
                 print("          windows/powershell/reverse_tcp")
                 print("          windows/batch/reverse_tcp")
+                print("          windows/exe/reverse_tcp")
                 print("     lhost=")
                 print("          192.168.10.1")
                 print("     lport=")
