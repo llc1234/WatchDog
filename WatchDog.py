@@ -17,7 +17,7 @@ class WatchDog:
         self.generate = {
             "payload" : "",
             "lhost"   : "",
-            "lport"   : "",
+            "lport"   : "5050",
         }
 
         self.server = {
