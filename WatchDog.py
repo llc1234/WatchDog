@@ -22,7 +22,7 @@ class WatchDog:
 
         self.server = {
             "rhost"   : "",
-            "rport"   : "",
+            "rport"   : "5050",
             "listening"  : "false"
         }
 
