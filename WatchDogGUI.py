@@ -9,7 +9,7 @@ class WatchDogGUI(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("WatchDog C2 Server")
-        self.geometry("800x600")
+        self.geometry("800x500")
         self.running = True
         self.WatchDog_Version = "0.1.0"
         
