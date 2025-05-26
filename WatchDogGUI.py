@@ -291,15 +291,15 @@ class WatchDogGUI:
                         # print(f"Client Connect: {[conn, addr[0]]}")
                         self.AddLogs(f"Client Connect: {addr[0]} PORT: {addr[1]}")
 
-                        """self.tree.insert('', tk.END, values=(
+                        self.tree.insert('', tk.END, values=(
                             addr[0],
                             "Client-01",
-                            "DESKTOP-ABC123/User1",
-                            "Windows 10 Pro 64-bit",
-                            "2 hours",
+                            self.cmd_WhoAmI(conn),
+                            self.cmd_OS_name(conn),
+                            self.cmd_Uptime(conn),
                             "00:01:23",
-                            "Google Chrome"
-                        ))"""
+                            "Powershell" # self.cmd_get_activeWindow(conn)
+                        ))
 
                     except socket.timeout:
                         pass
@@ -317,7 +317,7 @@ class WatchDogGUI:
         # Add missing names from list to Treeview
         for name in self.data_clients:
             if name[1] not in tree_names:
-                self.tree.insert('', tk.END, values=(
+                """self.tree.insert('', tk.END, values=(
                             name[1],
                             "Client-01",
                             "DESKTOP-ABC123/User1",
@@ -325,7 +325,7 @@ class WatchDogGUI:
                             "2 hours",
                             "00:01:23",
                             "Google Chrome"
-                        ))
+                        ))"""
                 # print(f"Added: {name}")
 
         # Remove names from Treeview that aren't in the list
@@ -379,6 +379,53 @@ class WatchDogGUI:
                 return 0
         except:
             return 0
+        
+    def cmd_WhoAmI(self, conn):
+        conn.send(bytes("whoami", "utf-8"))
+        rm = conn.recv(64).decode("utf-8")
+        return rm[0:-2]
+    
+    def cmd_OS_name(self, conn):
+        conn.send(bytes("$osInfo = Get-CimInstance Win32_OperatingSystem; $osInfo.Caption", "utf-8"))
+        rm = conn.recv(32).decode("utf-8")
+        return rm[0:-2]
+    
+
+    def cmd_Uptime(self, conn):
+        conn.send(bytes("(New-TimeSpan -Start (Get-CimInstance -ClassName win32_operatingsystem).LastBootUpTime).ToString()", "utf-8"))
+        rm = conn.recv(32).decode("utf-8")
+        return rm[0:-2]
+    
+    def cmd_get_activeWindow(self, conn):
+        command = """
+        // Add-Type @"
+        using System;
+        using System.Text;
+        using System.Runtime.InteropServices;
+
+        public class ActiveWindow {
+            [DllImport("user32.dll")]
+            public static extern IntPtr GetForegroundWindow();
+
+            [DllImport("user32.dll", SetLastError = true)]
+            public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+            public static string GetActiveWindowTitle() {
+                StringBuilder buffer = new StringBuilder(1024);
+                IntPtr handle = GetForegroundWindow();
+                GetWindowText(handle, buffer, buffer.Capacity);
+                return buffer.ToString();
+            }
+        }
+        // "@
+
+        [ActiveWindow]::GetActiveWindowTitle()
+        """
+        conn.send(bytes(command, "utf-8"))
+        rm = conn.recv(128).decode("utf-8")
+        return rm[0:-2]
+
+    
 
 if __name__ == "__main__":
     root = tk.Tk()
