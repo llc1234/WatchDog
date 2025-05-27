@@ -8,7 +8,7 @@ import threading
 from datetime import datetime
 
 
-
+        
 
 class WatchDog:
     def __init__(self):
@@ -90,6 +90,7 @@ class WatchDog:
 
             if imgui.begin_popup(f"context_menu_row_{i}"):
                 if imgui.menu_item("Shell")[0]:
+                    
                     imgui.end_popup()
                     break
                 if imgui.menu_item("Disconnect")[0]:
